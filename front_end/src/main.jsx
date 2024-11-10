@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Landing from './pages/Landing/Landing';
 import Home from './pages/Home/Home';
-import './styles/reset.css'
+// import './styles/reset.css'
 
 const router = createBrowserRouter([
   {
