@@ -6,21 +6,26 @@ const slides = [
   {
     title: "Easy Medication Management",
     description: "Order and manage your prescriptions with just a few clicks",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=2000",
+    image: "https://res.cloudinary.com/dzymyjltu/image/upload/v1731301508/doc1_wctcfe.avif",
   },
   {
     title: "Affordable Healthcare",
     description: "Get the best prices on your medications",
-    image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=2000",
+    image: "https://res.cloudinary.com/dzymyjltu/image/upload/v1731301508/doc2_thhd7p.avif",
   },
   {
     title: "Fast Delivery",
     description: "Medications delivered right to your doorstep",
-    image: "https://images.unsplash.com/photo-1583912267550-d44c9c897a76?auto=format&fit=crop&q=80&w=2000",
+    image: "https://res.cloudinary.com/dzymyjltu/image/upload/v1731301508/d2_zyru3s.jpg",
   },
 ];
 
+const handleGetStarted = () => {
+  navigate('/Uhome'); // Redirect to UHome
+};
+
 export default function Carousel() {
+  
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const navigate = useNavigate();
@@ -57,7 +62,8 @@ export default function Carousel() {
             <div>
               <h2 className="text-5xl font-bold mb-4">{slide.title}</h2>
               <p className="text-xl mb-8">{slide.description}</p>
-              <button className="bg-[#4CAF50] hover:bg-[#66BB6A] text-white px-8 py-3 rounded-md text-lg transition-colors" onClick={() => navigate('/home')}>
+              <button 
+              className="bg-[#4CAF50] hover:bg-[#66BB6A] text-white px-8 py-3 rounded-md text-lg transition-colors" onClick={() => navigate('/home')}>
                 Get Started
               </button>
             </div>

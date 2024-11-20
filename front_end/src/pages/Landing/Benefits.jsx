@@ -1,26 +1,26 @@
 import React, { forwardRef } from 'react';
-import { Clock, DollarSign, Truck, Shield } from 'lucide-react';
+import { Clock, Filter, Truck, Shield } from 'lucide-react';
 
 const benefits = [
   {
     icon: Clock,
-    title: '24/7 Service',
-    description: 'Access your medication needs anytime, anywhere',
+    title: 'Instant Approvals',
+    description: 'Get instant, doctor-approved validation for your medicine cart to ensure accurate treatment choices',
   },
   {
-    icon: DollarSign,
-    title: 'Best Prices',
-    description: 'Competitive prices on all medications',
+    icon: Filter,
+    title: 'Smart Filters',
+    description: 'Easily find the right medicines with customizable filters by type, price, and alternate options tailored to your needs',
   },
   {
     icon: Truck,
-    title: 'Fast Delivery',
-    description: 'Quick and reliable delivery to your doorstep',
+    title: 'Continuous Supply',
+    description: 'Ensure uninterrupted access to essential medicines for long-term care with options for reliable, ongoing delivery from trusted pharmacies',
   },
   {
     icon: Shield,
     title: 'Secure & Safe',
-    description: 'Your health information is protected',
+    description: 'Protecting your health information and ensuring a safe, trusted experience with top-notch data security.',
   },
 ];
 

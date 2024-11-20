@@ -3,7 +3,7 @@ import Carousel from './Carousel';
 import Benefits from './Benefits';
 import Support from './Support';
 import FAQ from './FAQ';
-import Footer from './Footer';
+import Footer from '../../Components/Footer';
 import LoginModal from './LoginModal';
 import SignUpModal from './SignUpModal';
 import './tailwind.css'

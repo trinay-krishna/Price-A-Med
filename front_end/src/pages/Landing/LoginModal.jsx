@@ -1,7 +1,14 @@
 import React from 'react'; 
+import { useNavigate } from 'react-router-dom';
 import { X, Facebook, Mail } from 'lucide-react';
 
 export default function LoginModal({ isOpen, onClose, onSignUpClick }) {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate('/home'); 
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -41,7 +48,9 @@ export default function LoginModal({ isOpen, onClose, onSignUpClick }) {
             />
           </div>
           
-          <button className="w-full bg-[#4CAF50] text-white py-2 rounded-md hover:bg-[#66BB6A] transition-colors text-center font-bold">
+          <button 
+          onClick={handleLogin}
+          className="w-full bg-[#4CAF50] text-white py-2 rounded-md hover:bg-[#66BB6A] transition-colors text-center font-bold">
             Login
           </button>
           

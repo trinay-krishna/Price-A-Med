@@ -1,6 +1,13 @@
-import { X, Facebook, Mail, User } from 'lucide-react';
+import { X, Facebook, Mail, User, Lock, Tag } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function SignUpModal({ isOpen, onClose, onLoginClick }) {
+  const navigate = useNavigate();
+
+  const handleSignUp = () => {
+    navigate('/home'); 
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -31,25 +38,46 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
           </div>
 
           <div className="space-y-1">
+            <label className="text-sm font-medium text-gray-700">Role</label>
+            <div className="relative">
+              <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <select
+                className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
+              >
+                <option value="consumer">Consumer</option>
+                <option value="store-agent">Store Agent</option>
+                <option value="doctor">Doctor</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
-              placeholder="Enter your email"
-            />
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <input
+                type="email"
+                className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
+                placeholder="Enter your email"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
-              placeholder="Create a password"
-            />
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <input
+                type="password"
+                className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
+                placeholder="Create a password"
+              />
+            </div>
           </div>
 
           <button
             type="submit"
+            onClick={handleSignUp}
             className="w-full bg-[#4CAF50] text-white py-2 rounded-md hover:bg-[#66BB6A] transition-colors text-center font-bold"
           >
             Sign Up
