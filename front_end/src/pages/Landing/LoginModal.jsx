@@ -1,12 +1,47 @@
-import React from 'react'; 
+import React, { useRef } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { X, Facebook, Mail } from 'lucide-react';
 
 export default function LoginModal({ isOpen, onClose, onSignUpClick }) {
   const navigate = useNavigate();
 
+  const userRef = useRef(null);
+  const passRef = useRef(null);
+  const errorRef = useRef(null);
+
   const handleLogin = () => {
-    navigate('/home'); 
+
+    const data = {
+      userName: userRef.current.value,
+      password: passRef.current.value, 
+    };
+
+
+    fetch('http://localhost:8080/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    }).then(res => {
+      if( res.status == 401 ) {
+        errorRef.current.textContent = 'Invalid username or password.';
+      } else if ( res.status == 200 ) {
+        return res.text();
+      }
+    }).then(res => {
+      const role = ( JSON.parse(res) ).role;
+      const { userId, username, email } = JSON.parse(res);
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('username', username);
+      localStorage.setItem('email', email);
+      localStorage.setItem('user', res);
+      if( role == 'CONSUMER' ) {
+        navigate('/home');
+      } else {
+        navigate('/storeDashboard');
+      }
+    });
   };
 
   if (!isOpen) return null;
@@ -25,15 +60,16 @@ export default function LoginModal({ isOpen, onClose, onSignUpClick }) {
           Welcome to Price A Med
         </h2>
         
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={e => e.preventDefault()}>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              Username or Email
             </label>
             <input
-              type="email"
+              type="text"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
-              placeholder="Enter your email"
+              placeholder="Enter your username or email"
+              ref={userRef}
             />
           </div>
           
@@ -45,8 +81,11 @@ export default function LoginModal({ isOpen, onClose, onSignUpClick }) {
               type="password"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
               placeholder="Enter your password"
+              ref={passRef}
             />
           </div>
+
+          <p ref={errorRef} className="text-red-500 text-center mt-2"></p>
           
           <button 
           onClick={handleLogin}

@@ -1,11 +1,36 @@
 import { X, Facebook, Mail, User, Lock, Tag } from 'lucide-react';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function SignUpModal({ isOpen, onClose, onLoginClick }) {
   const navigate = useNavigate();
 
+  const usernameRef = useRef(null);
+  const roleRef = useRef(null);
+  const emailRef = useRef(null);
+  const passRef = useRef(null);
+
+
   const handleSignUp = () => {
-    navigate('/home'); 
+
+    const data = {
+      username: usernameRef.current.value,
+      email: emailRef.current.value,
+      password: passRef.current.value,
+      role: roleRef.current.value,
+    };
+
+    fetch('http://localhost:8080/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    onLoginClick();
+
+    // navigate('/home'); 
   };
 
   if (!isOpen) return null;
@@ -24,7 +49,7 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
           Create Your Account
         </h2>
 
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={(e) => { e.preventDefault();handleSignUp(); }}>
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-700">Username</label>
             <div className="relative">
@@ -33,6 +58,8 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
                 type="text"
                 className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
                 placeholder="Choose a username"
+                ref={usernameRef}
+                required
               />
             </div>
           </div>
@@ -43,10 +70,11 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
               <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <select
                 className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
+                ref={roleRef}
+                
               >
-                <option value="consumer">Consumer</option>
-                <option value="store-agent">Store Agent</option>
-                <option value="doctor">Doctor</option>
+                <option value="CONSUMER">Consumer</option>
+                <option value="STORE_AGENT">Store Agent</option>
               </select>
             </div>
           </div>
@@ -59,6 +87,8 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
                 type="email"
                 className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
                 placeholder="Enter your email"
+                ref={emailRef}
+                required
               />
             </div>
           </div>
@@ -71,13 +101,15 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
                 type="password"
                 className="w-full pl-10 py-2 border border-gray-300 rounded-md focus:ring-[#4CAF50] focus:border-[#4CAF50]"
                 placeholder="Create a password"
+                ref={passRef}
+                required
               />
             </div>
           </div>
 
           <button
             type="submit"
-            onClick={handleSignUp}
+            // onClick={handleSignUp}
             className="w-full bg-[#4CAF50] text-white py-2 rounded-md hover:bg-[#66BB6A] transition-colors text-center font-bold"
           >
             Sign Up

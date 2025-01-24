@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../../Components/Header';
 import Footer from '../../Components/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -112,9 +112,10 @@ function PrescriptionCard({ icon: Icon, title, count }) {
 }
 
 function PaymentMethods() {
+  const upiIds = ["example@upi", "user@bank", "sample@paytm"];
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6">
-      <h3 className="text-xl font-semibold text-emerald-900 mb-6">Your Cards</h3>
+      <h3 className="text-xl font-semibold text-emerald-900 mb-6">Saved Payment Methods</h3>
       <div className="grid grid-cols-3 gap-4">
         <img src="https://res.cloudinary.com/dzymyjltu/image/upload/v1731560579/c1_j1nc4s.jpg" alt="Card 1" className="aspect-[3/2] rounded-xl cursor-pointer hover:shadow-lg transition-shadow" />
         <img src="https://res.cloudinary.com/dzymyjltu/image/upload/v1731560579/c2_sb6o1s.jpg" alt="Card 2" className="aspect-[3/2] rounded-xl cursor-pointer hover:shadow-lg transition-shadow" />
@@ -135,6 +136,23 @@ function PaymentMethods() {
           />
         </div>
       </div>
+
+      <div className="bg-white shadow-lg rounded-lg p-6 w-80">
+        <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
+          UPI IDs
+        </h3>
+        <div className="mt-4">
+          {upiIds.map((id, index) => (
+            <div
+              key={index}
+              className="bg-green-100 text-green-700 p-3 rounded-md mb-2 shadow-sm hover:shadow-md"
+            >
+              {id}
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
@@ -142,14 +160,66 @@ function PaymentMethods() {
 function MyProfile() {
 
   const navigate = useNavigate();
+  const [runningPrescriptions, setRunningPrescriptions] = useState(0);
+  const [oldPrescriptions, setOldPrescriptions] = useState(0);
+  const [membershipPlanName, setMembershipPlanName] = useState('');
+
+useEffect(() => {
+  // Fetch all membership plans
+  fetch('http://localhost:8080/getMembershipPlans')
+    .then((res) => res.json())
+    .then((membershipPlans) => {
+      // Fetch user membership
+      fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+        .then((res) => res.json())
+        .then((membership) => {
+
+          // Find the corresponding membership plan name
+
+          const planName = membership.membership.planName;
+          setMembershipPlanName(planName || 'No Membership');
+        })
+        .catch((err) => console.error('Error fetching user membership:', err));
+    })
+    .catch((err) => console.error('Error fetching membership plans:', err));
+}, []);
+
+
+  // *****************************************************************************************************************
 
   const [userInfo, setUserInfo] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
+    name: localStorage.getItem('username') || 'John Doe',
+    email: localStorage.getItem('email') || 'john.doe@example.com',
     phone: '+1 973 456 7890',
     dob: '1990-06-12',
     address: '123 Maple Street Springfield, IL 62704 USA',
   });
+
+  useEffect(() => {
+    fetch('http://localhost:8080/getPrescriptions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: localStorage.getItem('userId') || null,
+    })
+      .then((res) => res.text())
+      .then((res) => {
+        const prescriptionList = JSON.parse(res);
+        let runningCount = 0;
+        let oldCount = 0;
+
+        prescriptionList.forEach((prescription) => {
+          if (prescription.endDate != null) oldCount += 1;
+          else runningCount += 1;
+        });
+
+        setRunningPrescriptions(runningCount);
+        setOldPrescriptions(oldCount);
+        console.log(runningCount, oldCount);
+      })
+      .catch((err) => console.error('Error fetching prescriptions:', err));
+  }, []);
 
   const [errors, setErrors] = useState({});
 
@@ -272,7 +342,7 @@ function MyProfile() {
 
               <div className="mt-8">
                 <button type="submit" className="w-full py-2 px-4 text-white bg-emerald-600 rounded-lg hover:bg-red-400 transition-colors">
-                  Save Changes
+                  Edit Profile
                 </button>
               </div>
             </form>
@@ -285,14 +355,13 @@ function MyProfile() {
                 <PrescriptionCard
                   icon={Bell}
                   title="Running Prescriptions"
-                  count="1 pending"
+                  count={`${runningPrescriptions} pending`}
                 />
                 <PrescriptionCard
                   icon={FileText}
                   title="Older Prescriptions"
-                  count="2 viewed"
+                  count={`${oldPrescriptions} viewed`}
                 />
-
               </div>
             </div>
             <div className="bg-white rounded-2xl shadow-sm p-6">
@@ -302,7 +371,7 @@ function MyProfile() {
                   <div className="flex items-center">
                     <CreditCard className="w-5 h-5 text-emerald-600 mr-3" />
                     <div>
-                      <p className="font-medium text-emerald-900">Health Starter</p>
+                      <p className="font-medium text-emerald-900">{membershipPlanName}</p>
                       <p className="text-sm text-emerald-600">Current membership plan</p>
                     </div>
                   </div>
@@ -319,6 +388,16 @@ function MyProfile() {
 
 
             <PaymentMethods />
+
+            <div className="bg-gradient-to-br  from-green-700 to-green-400 rounded-2xl shadow-sm p-6" onClick={() => navigate('/health')}>
+              <h3 className="text-xl font-semibold text-white mb-4">Know Your Health Status</h3>
+              <p className="text-m text-white">Your Health Conditions & Allergies
+                Manage your health information and prescriptions</p>
+
+
+            </div>
+
+
           </div>
         </div>
       </main>

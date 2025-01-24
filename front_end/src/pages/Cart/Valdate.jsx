@@ -12,6 +12,7 @@ function Validate() {
   
   const receivedItems = location.state?.items || [];
   const [items, setItems] = useState(receivedItems);
+  const [ avoid, setAvoid ] = useState([]);
 
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [showCardDetails, setShowCardDetails] = useState(false);
@@ -19,6 +20,17 @@ function Validate() {
   const [paymentMethodVisible, setPaymentMethodVisible] = useState(false); // New state
   
   const navigate = useNavigate();
+
+    const [ discount, setDiscount ] = useState(20);
+  
+    useEffect( ( ) => {
+      fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+      .then( res => res.text() )
+      .then( res => {
+        const discount = JSON.parse(res).membership.planDiscount;
+        setDiscount(discount);
+      } )
+    }, [] )
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -30,12 +42,32 @@ function Validate() {
   const handleCheckout = () => {
     navigate('/checkout', {
       state: {
-        total: discountedTotal
+        total: total.toFixed(2)
       }
     }); 
   };
 
-  const itemsTotal = items.reduce((sum, item) => sum + (item.price * 0.6).toFixed(2) * item.quantity, 0);
+  function onCheckoutClick() {
+      console.log(items);
+
+      const idList = items.map( ele => ele.medicationID );
+      
+      fetch('http://localhost:8080/validateMeds', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(idList),
+      }).then( res => res.text() ).then( res => {
+        const resList = JSON.parse(res);
+        setAvoid(resList);
+        console.log(resList.length, resList);
+        if ( resList.length == 0 ) setDeliveryDetailsVisible(true); 
+      } );
+
+  }
+
+  const itemsTotal = items.reduce((sum, item) => sum + (item.price - item.price * discount/100).toFixed(2) * item.quantity, 0);
   const deliveryCharge = 10;
   const total = itemsTotal + deliveryCharge;
   const discountedTotal = (total*0.90).toFixed(2);
@@ -78,7 +110,7 @@ function Validate() {
                   </thead>
                   <tbody>
                     {items.map((item, index) => (
-                      <tr key={index} className="border-b border-emerald-50">
+                      <tr key={index} className={`border-b border-emerald-50 ${ avoid.includes(item.medicationID) ? 'bg-red-500' : ''}`}>
                         <td className="py-4 text-emerald-900">{item.name}</td>
                         <td className="py-4">
                           <div className="flex items-center justify-center space-x-2">
@@ -97,7 +129,7 @@ function Validate() {
                             </button>
                           </div>
                         </td>
-                        <td className="text-right py-4 text-emerald-900">${((item.price * 0.6) * item.quantity).toFixed(2)}</td>
+                        <td className="text-right py-4 text-emerald-900">${((item.price - item.price * discount/100) * item.quantity).toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -119,7 +151,7 @@ function Validate() {
                 )}
                 
                 <button
-                  onClick={() => setDeliveryDetailsVisible(true)} // Show delivery section
+                  onClick={() => onCheckoutClick()} // Show delivery section
                   className="w-full bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors mt-4"
                 >
                   Checkout
@@ -272,10 +304,10 @@ function Validate() {
                 <p className="text-sm font-semibold text-emerald-900">${total.toFixed(2)}</p>
               </div>
               <div className="border-t border-gray-200 my-4"></div>
-              <div className="flex justify-between items-center">
+              {/* <div className="flex justify-between items-center">
                 <p className="text-sm text-emerald-700">Discounted Total</p>
                 <p className="text-lg font-semibold text-red-600">${discountedTotal}</p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -10,17 +10,21 @@ public class UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
     // Enum for Role
     public enum Role {
-        CONSUMER, STORE_AGENT, DOCTOR
+        CONSUMER, STORE_AGENT
     }
 
     public UserDetails(Integer userId, String password, String email, Role role, String username) {

@@ -12,6 +12,8 @@ import Membership from './pages/Home/Membership';
 import Cart from './pages/Cart/CartMed';
 import Checkout from './pages/Cart/Checkout';
 import Validate from './pages/Cart/Valdate';
+import HealthDashboard from './pages/Health/HealthDashboard'
+import StoreDashboard from './pages/pharmaStore/StoreDashboard';
 import { DrugsProvider } from "./Components/DrugsContext";
 const Layout = () => (
   <div>
@@ -33,6 +35,8 @@ const router = createBrowserRouter([
       { path: '/validate', element: <Validate /> },
       { path: '/checkout', element: <Checkout /> },
       { path: '/prescription', element: <Prescription /> },
+      { path: '/storeDashboard', element: <StoreDashboard /> },
+      {path: '/health',element: <HealthDashboard/>},
       { path: '/orders', element: <YourOrders /> }  // Add route for orders page /membership
     ],
   },

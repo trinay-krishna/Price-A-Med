@@ -12,29 +12,59 @@ function CartMed() {
   const { allDrugs, setAllDrugs, toggleAddToCart } = useDrugsContext();
   const navigate = useNavigate();
   const cartItems = allDrugs.filter((drug) => drug.addToCart);
-  const [items, setItems] = useState(
-    cartItems.map((drug) => ({
-      id: drug.medid,
-      name: `${drug.medname} - ${drug.strength}`,
-      brand: drug.brandname,
-      store: drug.store_name,
-      distance: `${drug.distance} miles away`,
-      delivery: drug.home_delivery ? "Home Delivery" : "In-store Pickup",
-      price: drug.price,
-      quantity: 0,
-      selected: false
-    }))
-  );
+  const [items, setItems] = useState([]);
+
+  const [total, setTotal] = useState(0);
+
+  const [ discount, setDiscount ] = useState(20);
+
+  useEffect( ( ) => {
+    fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+    .then( res => res.text() )
+    .then( res => {
+      const discount = JSON.parse(res).membership.planDiscount;
+      setDiscount(discount);
+    } )
+  }, [] )
+
   const calculateTotalAmount = (items) => {
     return items.reduce((sum, item) => {
-      return sum + (item.selected ? (item.price * 0.6).toFixed(2) * item.quantity : 0);
+      return sum + (item.selected ? (item.price - item.price * discount/100).toFixed(2) * item.quantity : 0);
     }, 0);
   };
-  const [total, setTotal] = useState(calculateTotalAmount(items));
+
+  useEffect( ( ) => {
+    fetch(`http://localhost:8080/getUserCart?userID=${localStorage.getItem('userId')}`)
+    .then(res => res.text())
+    .then(res => {
+      const cartItems = JSON.parse(res);
+      console.log(JSON.parse(res));
+
+      const formattedCart = cartItems.map((drug) => ({
+        id: drug.id,
+        pharmID: drug.pharmacy.id,
+        medicationID: drug.medication.id,
+        name: `${drug.medication.name} - ${drug.medication.strength}`,
+        brand: drug.medication.manufacturer,
+        store: drug.pharmacy.name,
+        distance: `3 miles away`,
+        delivery: drug.pharmacy.homeDelivery ? "Home Delivery" : "In-store Pickup",
+        price: drug.unitPrice,
+        quantity: drug.quantity,
+        selected: true
+      }));
+
+      setItems(formattedCart);
+
+      setTotal(calculateTotalAmount(formattedCart));
+
+
+    })
+  }, [] );
+
 
   const removeItem = (id) => {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
-    toggleAddToCart(id);
   };
 
   const updateTotal = () => {
@@ -75,9 +105,9 @@ function CartMed() {
       quantity: item.quantity, // Default quantity from the selected items
       price: item.price
     }));
-    console.log(transformedItems);
+    console.log(selectedItems);
     // Navigate and pass the transformed items as state
-    navigate('/validate', { state: { items: transformedItems } });
+    navigate('/validate', { state: { items: selectedItems } });
 
   };
 

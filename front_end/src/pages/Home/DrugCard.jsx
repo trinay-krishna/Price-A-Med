@@ -3,8 +3,21 @@ import { MapPin, ShoppingCart, Truck, Star, Calendar } from 'lucide-react';
 import { useDrugsContext } from "../../Components/DrugsContext"; 
 
 export default function DrugCard({ drug }) {
+
+  const [ discount, setDiscount ] = useState(1);
+
+  useEffect( ( ) => {
+    fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+    .then( res => res.text() )
+    .then( res => {
+      const discount = JSON.parse(res).membership.planDiscount;
+      setDiscount(discount);
+      console.log("DISCOUNT IS ", discount);
+    } )
+  }, [] )
+
   // Calculate discounted price
-  const discountedPrice = (drug.price * 0.6).toFixed(2); // 40% discount applied
+  const discountedPrice = (drug.price - ( drug.price * (discount/100) )).toFixed(2); // 40% discount applied
   const {allDrugs,toggleAddToCart } = useDrugsContext(); 
   const [isAddedToCart, setIsAddedToCart] = useState(drug.addToCart);
 
@@ -14,7 +27,28 @@ export default function DrugCard({ drug }) {
 
 
   const onButtonClick = () => {
-    toggleAddToCart(drug.medid);  // Toggle the cart state
+    console.log(drug.med);
+    const med = drug.med;
+    if ( !isAddedToCart ) {
+      fetch('http://localhost:8080/addCart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user: JSON.parse(localStorage.getItem('user')),
+          pharmacy: med.pharmacy, 
+          medication: med.medication,
+          quantity: 1,
+          unitPrice: med.unitPrice,
+        }),
+      })
+    } else {
+      fetch(`http://localhost:8080/delCart?userId=${localStorage.getItem('userId')}&medId=${med.medication.id}&pharmId=${med.pharmacy.id}`, { method: 'POST' })
+      .then(res => res.text())
+      .then(res => console.log(res));
+    }
+    // toggleAddToCart(drug.medid); 
     setIsAddedToCart(!isAddedToCart);  // Update the local state
   };
 

@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 
 function CartItem({
   id,
@@ -13,10 +13,13 @@ function CartItem({
   onQuantityChange,
   onCheckboxChange,
   removeItem,
+  pharmID,
+  medicationID,
   updateTotal
 }) {
 
   const [Quantity, setIsQuantity] = useState(quantity);
+  const [ discount, setDiscount ] = useState(20);
   const onIncButton=()=>{
      onQuantityChange(id, true);
      setIsQuantity( Math.min(Quantity + 1, 10));  
@@ -27,17 +30,30 @@ function CartItem({
  };
   const onButtonClick=()=>{
     removeItem(id);
+
+    fetch(`http://localhost:8080/delCart?userId=${localStorage.getItem('userId')}&medId=${medicationID}&pharmId=${pharmID}`, { method: 'POST' })
+    .then(res => console.log(res.status));
+
   };
+
+  useEffect( ( ) => {
+    fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+    .then( res => res.text() )
+    .then( res => {
+      const discount = JSON.parse(res).membership.planDiscount;
+      setDiscount(discount);
+    } )
+  }, [] )
 
   return (
     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-md">
       <div className="flex items-center gap-4">
-        <input
+        {/* <input
           type="checkbox"
-          checked={selected}
+          checked={true}
           onChange={()=>{onCheckboxChange(id)}}
           className="h-5 w-5 text-indigo-600 border-gray-300 rounded"
-        />
+        /> */}
         <div>
           <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
           <p className="text-sm text-gray-600">{brand}</p>
@@ -63,7 +79,7 @@ function CartItem({
             +
           </button>
         </div>
-        <p className="text-lg font-medium text-green-600">$ {Quantity*(price * 0.6).toFixed(2)}</p>
+        <p className="text-lg font-medium text-green-600">$ {Quantity*(price - price * discount/100).toFixed(2)}</p>
       </div>
       <button 
       onClick={onButtonClick}

@@ -1,163 +1,208 @@
-import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
-import Header from '../../Components/Header';
-import Footer from '../../Components/Footer';
-import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import Header from "../../Components/Header";
+import Footer from "../../Components/Footer";
+import { useState } from "react";
 
 const Upload = () => {
-  const navigate = useNavigate(); // Hook to navigate programmatically
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    disease: '',
-    startDate: '',
-    doctor: '',
-    hospital: '',
-    address: '',
-    file: null,
+    date: "",
+    diseaseName: "",
+    doctorName: "",
+    hospitalName: "",
+    hospitalAddress: "",
+    age: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    const uploadData = new FormData();
+    uploadData.append("file", file);
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, file: e.target.files[0] });
-  };
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:8080/api/upload", {
+        method: "POST",
+        body: uploadData,
+      });
 
-  const validateForm = () => {
-    const { disease, startDate, doctor, file } = formData;
-    const letters = /^[A-Za-z\s]+$/;
-    const today = new Date().toISOString().split("T")[0];
+      if (!response.ok) {
+        console.error("Error uploading file:", response.statusText);
+        alert("Error uploading file. Please try again.");
+        return;
+      }
 
-    if (!letters.test(disease)) {
-      alert("Please enter a valid Disease Name with letters only.");
-      return false;
-    }
-    if (!letters.test(doctor)) {
-      alert("Please enter a valid Doctor Name with letters only.");
-      return false;
-    }
-    if (startDate > today) {
-      alert("The Start Date cannot be in the future.");
-      return false;
-    }
-    if (!file) {
-      alert("Please upload a prescription file.");
-      return false;
-    }
-    const allowedExtensions = /(\.pdf|\.jpg|\.jpeg|\.png)$/i;
-    if (!allowedExtensions.exec(file.name)) {
-      alert("Please upload file in PDF, JPG, or PNG format.");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      alert("Form submitted successfully!");
+      const data = await response.json();
+      setFormData({
+        date: data.date || "",
+        diseaseName: data.diseaseName || "",
+        doctorName: data.doctorName || "",
+        hospitalName: data.hospitalName || "",
+        hospitalAddress: data.hospitalAddress || "",
+        age: data.age || "",
+      });
+      alert("File uploaded successfully!");
+    } catch (error) {
+      console.error("Error processing file:", error);
+      alert("An error occurred while processing the file.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleClose = () => {
-    navigate('/Uhome'); // Redirect to UHome
+  const handleSave = () => {
+    const prescription = {
+      startDate: formData.date,
+      diseaseName: formData.diseaseName,
+      doctorName: formData.doctorName,
+      hospitalName: formData.hospitalName,
+      hospitalAddress: formData.hospitalAddress,
+      endDate: null,
+      userId: localStorage.getItem('userId')
+    };
+
+    fetch('http://localhost:8080/addPrescription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(prescription),
+    }).then(res => navigate('/prescription'));
+
+
+
+
+
   };
 
   return (
-    <><div className='bg-green-50'>
+    <div className="bg-green-50 min-h-screen flex flex-col">
       <Header />
-      
-      <div className="max-w-md mx-auto p-6 mt-10 rounded-md shadow-md mb-10 bg-blue-100">
-        <h2 className="text-2xl font-bold mb-6 text-center">Prescription Form</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="disease" className="block text-gray-700 font-medium mb-2">Disease Name:</label>
-            <input
-              type="text"
-              id="disease"
-              name="disease"
-              value={formData.disease}
-              onChange={handleChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="startDate" className="block text-gray-700 font-medium mb-2">Start Date:</label>
-            <input
-              type="date"
-              id="startDate"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="doctor" className="block text-gray-700 font-medium mb-2">Doctor Name:</label>
-            <input
-              type="text"
-              id="doctor"
-              name="doctor"
-              value={formData.doctor}
-              onChange={handleChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="hospital" className="block text-gray-700 font-medium mb-2">Hospital Name:</label>
-            <input
-              type="text"
-              id="hospital"
-              name="hospital"
-              value={formData.hospital}
-              onChange={handleChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="address" className="block text-gray-700 font-medium mb-2">Hospital Address:</label>
-            <input
-              type="text"
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="file" className="block text-gray-700 font-medium mb-2">Prescription File:</label>
-            <input
-              type="file"
-              id="file"
-              name="file"
-              onChange={handleFileChange}
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              required
-            />
-          </div>
-          <div className="flex justify-between mt-6">
-          <button
-              type="button"
-              className="bg-red-400 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:bg-red-600"
-              onClick={handleClose} // Trigger the close function here
-            >
-              Close
-            </button>
-
-            <button type="submit" className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 focus:outline-none focus:bg-green-600">Save</button>
-          </div>
-        </form>
+      <div className="flex-grow flex justify-center items-center m-5">
+        <div className="w-full max-w-lg bg-blue-100 p-6 rounded-md shadow-md">
+          <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+            Prescription Form
+          </h2>
+          <form>
+            <div className="mb-4">
+              <label htmlFor="file" className="block text-gray-700 font-medium mb-2">
+                Upload Prescription File:
+              </label>
+              <input
+                type="file"
+                id="file"
+                name="file"
+                onChange={handleFileUpload}
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                required
+              />
+            </div>
+            {loading ? (
+              <p className="text-center text-blue-500">Processing file, please wait...</p>
+            ) : (
+              <>
+                <div className="mb-4">
+                  <label htmlFor="date" className="block text-gray-700 font-medium mb-2">
+                    Date:
+                  </label>
+                  <input
+                    type="text"
+                    id="date"
+                    name="date"
+                    value={formData.date}
+                    readOnly
+                    className="w-full p-2 border rounded bg-gray-100 focus:outline-none"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="disease" className="block text-gray-700 font-medium mb-2">
+                    Disease Name:
+                  </label>
+                  <input
+                    type="text"
+                    id="disease"
+                    name="disease"
+                    value={formData.diseaseName}
+                    readOnly
+                    className="w-full p-2 border rounded bg-gray-100 focus:outline-none"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="doctor" className="block text-gray-700 font-medium mb-2">
+                    Doctor Name:
+                  </label>
+                  <input
+                    type="text"
+                    id="doctor"
+                    name="doctor"
+                    value={formData.doctorName}
+                    readOnly
+                    className="w-full p-2 border rounded bg-gray-100 focus:outline-none"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="hospital" className="block text-gray-700 font-medium mb-2">
+                    Hospital Name:
+                  </label>
+                  <input
+                    type="text"
+                    id="hospital"
+                    name="hospital"
+                    value={formData.hospitalName}
+                    readOnly
+                    className="w-full p-2 border rounded bg-gray-100 focus:outline-none"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="address" className="block text-gray-700 font-medium mb-2">
+                    Hospital Address:
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value={formData.hospitalAddress}
+                    readOnly
+                    className="w-full p-2 border rounded bg-gray-100 focus:outline-none"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="age" className="block text-gray-700 font-medium mb-2">
+                    Age:
+                  </label>
+                  <input
+                    type="text"
+                    id="age"
+                    name="age"
+                    value={formData.age}
+                    readOnly
+                    className="w-full p-2 border rounded bg-gray-100 focus:outline-none"
+                  />
+                </div>
+              </>
+            )}
+            <div className="flex justify-between mt-6">
+              <button
+                type="button"
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none"
+                onClick={() => navigate("/home")}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 focus:outline-none"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
       <Footer />
-      </div>
-    </>
+    </div>
   );
 };
 

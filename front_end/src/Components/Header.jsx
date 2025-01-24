@@ -35,7 +35,7 @@ export default function Header({ onLoginClick }) {
   };
 
   // Determine if Profile should be highlighted
-  const isProfileActive = ["/profile", "/orders", "/membership", "/support"].some((profilePath) =>
+  const isProfileActive = ["/profile", "/orders", "/membership", "/support", "/health"].some((profilePath) =>
     location.pathname.startsWith(profilePath)
   );
 

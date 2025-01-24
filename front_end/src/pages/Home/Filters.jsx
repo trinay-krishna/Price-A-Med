@@ -14,15 +14,11 @@ import {
 
 export default function Filters({ filteredDrugs, setFilteredDrugs }) {
   const [selectedPrice, setSelectedPrice] = useState(null);
+  const [selectedDrugType,setSelectedDrugType]=useState(null);
+  const [selectedRange,setSelectedRange]=useState(null);
+  const [selectedMembership,setSelectedMembership]=useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState([]);
-  const [selectedDiscount, setSelectedDiscount] = useState([]);
-  const [selectedDrugCategory, setSelectedDrugCategory] = useState([]);
-  const [prescriptionRequired, setPrescriptionRequired] = useState(null);
-  const [selectedDosageForm, setSelectedDosageForm] = useState([]);
-  const [selectedStrength, setSelectedStrength] = useState("");
-  const [selectedAvailability, setSelectedAvailability] = useState(null);
-  const [selectedRating, setSelectedRating] = useState(null);
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState(null);
   const { allDrugs, setAllDrugs } = useDrugsContext();
   const [activeFilter,setActiveFilter]=useState("all");
 
@@ -73,11 +69,58 @@ export default function Filters({ filteredDrugs, setFilteredDrugs }) {
       }
     }
 
-    if (selectedDrugCategory.length > 0) {
-      filtered = filtered.filter((drug) =>
-        selectedDrugCategory.includes(drug.drug_category)
-      );
+    if (selectedRange) {
+      filtered = filtered.filter(drug => drug.distance <= selectedRange);
     }
+
+    if (selectedDrugType) {
+      if(selectedDrugType=="Generic"){
+        filtered = filtered.filter(drug => drug.generic==true);
+      }
+      else{
+        filtered = filtered.filter(drug => drug.generic==false);
+      }
+    }
+
+    if (selectedAgeGroup) {
+      filtered = filtered.filter(drug => {
+        const ageRangeString = drug.age_range.split("+")[0]; // Extract the minimum age part as a string
+        const ageRange = parseInt(ageRangeString, 10); // Convert to integer
+    
+        if (selectedAgeGroup === "Child") {
+          return ageRange < 18; // Children under 18
+        } else if (selectedAgeGroup === "Adult") {
+          return ageRange >= 18 && ageRange <= 35; // Adults between 18 and 35
+        } else if (selectedAgeGroup === "Elder"){
+          return ageRange>=18; // Seniors above 35
+        }
+        else{
+          return true;
+        }
+      });
+    }
+    
+    if (selectedMembership) {
+      if(selectedMembership=="Vital Care"){
+        filtered = filtered.map(item => ({
+          ...item,
+          discounted: (item.price - item.price * 0.25).toFixed(2)
+        }));
+      }
+      else if(selectedMembership=="Wellness Plus"){
+        filtered = filtered.map(item => ({
+          ...item,
+          discounted: (item.price - item.price * 0.20).toFixed(2)
+        }));
+      }
+      else{
+        filtered = filtered.map(item => ({
+          ...item,
+          discounted: (item.price - item.price * 0.15).toFixed(2)
+        }));
+      }
+    }
+
 
     // if (selectedAgeGroup.length > 0) {
     //   filtered = filtered.filter((drug) => selectedAgeGroup.includes(drug.age_range));
@@ -104,84 +147,45 @@ export default function Filters({ filteredDrugs, setFilteredDrugs }) {
   const clearFilters = () => {
     setFilteredDrugs(allDrugs);
     setSelectedPrice(null);
+    setSelectedDrugType(null);
+    setSelectedRange("");
+    setSelectedMembership(null);
     setSelectedTags([]);
     setSelectedAgeGroup([]);
-    setSelectedDiscount([]);
-    setSelectedDrugCategory([]);
-    setPrescriptionRequired(null);
-    setSelectedDosageForm([]);
-    setSelectedStrength("");
-    setSelectedAvailability(null);
-    setSelectedRating(null);
     onFilterChange({});
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold mb-6">Filters</h2>
+      <h2 className="text-2xl font-semibold mb-6">Filters</h2>
 
-      {/* Existing Filters */}
-      <div className="space-y-4">
-        {filters.map((filter) => (
-          <button
-            key={filter.id}
-            onClick={() => onFilterChange({ filterId: filter.id })}
-            className={`w-full flex items-center gap-3 p-3 rounded-md transition-colors ${
-              activeFilter === filter.id
-                ? "bg-[#E8F5E9] text-[#34A853]"
-                : "hover:bg-gray-50"
-            }`}
-          >
-            <filter.icon className="w-5 h-5" />
-            <span>{filter.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Additional Filters */}
-      <div className="space-y-4 mt-6">
-        <h3 className="text-lg font-semibold">Drug Categories</h3>
-        {drugCategories.map((category) => (
-          <label key={category} className="block">
-            <input
-              type="checkbox"
-              value={category}
-              checked={selectedDrugCategory.includes(category)}
-              onChange={(e) =>
-                handleMultiSelect(e, setSelectedDrugCategory, selectedDrugCategory)
-              }
-              className="mr-2"
-            />
-            {category}
-          </label>
-        ))}
-      </div>
-
-      {/* Prescription Required */}
-      <div className="mt-4 space-x-4">
-        <h3 className="text-lg font-semibold pb-1">Prescription Required</h3>
+            {/* Drug Types*/}
+            <div className="mt-4">
+        <h3 className="text-lg font-semibold">Drug Type</h3>
+        <div className="flex gap-4 flex-col p-3">
         <label>
           <input
             type="radio"
-            name="pxreq"
-            value="true"
-            checked={prescriptionRequired === "true"}
-            onChange={(e) => setPrescriptionRequired(e.target.value)}
+            name="DrugType"
+            value="Generic"
+            checked={selectedDrugType == "Generic"}
+            onChange={(e) => setSelectedDrugType(e.target.value)}
             className="mr-2"
           />
-          Yes
+          Generic
         </label>
         <label>
           <input
             type="radio"
-            name="pxreq"
-            value="false"
-            checked={prescriptionRequired === "false"}
-            onChange={(e) => setPrescriptionRequired(e.target.value)}
+            name="DrugType"
+            value="Branded"
+            checked={selectedDrugType === "Branded"}
+            onChange={(e) => setSelectedDrugType(e.target.value)}
             className="mr-2"
           />
-          No
+          Branded 
         </label>
+        </div>
       </div>
 
              {/* Price Filting*/}
@@ -193,7 +197,7 @@ export default function Filters({ filteredDrugs, setFilteredDrugs }) {
             type="radio"
             name="price"
             value="lowToHigh"
-            checked={selectedPrice == "lowToHigh"}
+            checked={selectedPrice === "lowToHigh"}
             onChange={(e) => setSelectedPrice(e.target.value)}
             className="mr-2"
           />
@@ -214,98 +218,98 @@ export default function Filters({ filteredDrugs, setFilteredDrugs }) {
       </div>
           
           {/* Age Group */}
-      <div className="space-y-2 mt-2 ">
+        <div className="mt-4">
         <h3 className="text-lg font-semibold">Age Group</h3>
-        <div className="pl-2 space-y-3 pb-2">
-        {ageGroupOptions.map((form) => (
-          <label key={form} className="block">
-            <input
-              type="checkbox"
-              value={form}
-              checked={selectedAgeGroup.includes(form)}
-              onChange={(e) =>
-                handleMultiSelect(e, setSelectedAgeGroup, selectedAgeGroup)
-              }
-              className="mr-2"
-            />
-            {form}
-          </label>
-        ))}
-        </div>
-      </div>
-
-      {/* Dosage Form */}
-      <div className="space-y-4 mt-2">
-        <h3 className="text-lg font-semibold">Dosage Form</h3>
-        {dosageForms.map((form) => (
-          <label key={form} className="block pl-2">
-            <input
-              type="checkbox"
-              value={form}
-              checked={selectedDosageForm.includes(form)}
-              onChange={(e) =>
-                handleMultiSelect(e, setSelectedDosageForm, selectedDosageForm)
-              }
-              className="mr-2"
-            />
-            {form}
-          </label>
-        ))}
-      </div>
-
-      {/* Strength */}
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold">Strength</h3>
-        <input
-          type="text"
-          placeholder="e.g., 500mg, 10ml"
-          value={selectedStrength}
-          onChange={(e) => setSelectedStrength(e.target.value)}
-          className="w-full border rounded-md p-2"
-        />
-      </div>
-
-      {/* Availability */}
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold">Availability</h3>
-        <div className="space-x-8">
+        <div className="flex gap-4 flex-col p-3">
         <label>
           <input
             type="radio"
-            name="availability"
-            value="true"
-            checked={selectedAvailability === "true"}
-            onChange={(e) => setSelectedAvailability(e.target.value)}
-            className="mr-1"
+            name="Age"
+            value="Child"
+            checked={selectedAgeGroup === "Child"}
+            onChange={(e) => setSelectedAgeGroup(e.target.value)}
+            className="mr-2"
           />
-          In Stock
+          Child
         </label>
-        <label >
+        <label>
           <input
             type="radio"
-            name="availability"
-            value="false"
-            checked={selectedAvailability === "false"}
-            onChange={(e) => setSelectedAvailability(e.target.value)}
-            className="mr-1"
-          />Out of Stock
+            name="Age"
+            value="Adult"
+            checked={selectedAgeGroup === "Adult"}
+            onChange={(e) => setSelectedAgeGroup(e.target.value)}
+            className="mr-2"
+          />
+          Adult
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="Age"
+            value="Elder"
+            checked={selectedAgeGroup === "Elder"}
+            onChange={(e) => setSelectedAgeGroup(e.target.value)}
+            className="mr-2"
+          />
+          Elder
         </label>
         </div>
       </div>
 
-      {/* Rating */}
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold">Rating</h3>
-        <input
-          type="number"
-          step="0.1"
-          min="0"
-          max="5"
-          placeholder="e.g., 4.5"
-          value={selectedRating}
-          onChange={(e) => setSelectedRating(e.target.value)}
-          className="w-full border rounded-md p-2"
-        />
+
+     {/*Range*/}
+     <div className="space-y-2 mt-2 ">
+     <h3 className="text-lg font-semibold">Store Distance Range</h3>
+     <input
+        id="range-input"
+        type="text"
+        value={selectedRange}
+        onChange={(e)=>setSelectedRange(e.target.value)}
+        placeholder="Enter Miles"
+        className={`w-24 h-8 bg-gray-200 ring-1 ring-black text-center mt-2 rounded outline-none
+          transition-all focus:ring-2 focus:ring-green-600 `}
+          />
+      </div>
+  
+           {/* Price Filting*/}
+           <div className="mt-4">
+        <h3 className="text-lg font-semibold">Membership Coverages</h3>
+        <div className="flex gap-4 flex-col p-3">
+        <label>
+          <input
+            type="radio"
+            name="member"
+            value="Vital Care"
+            checked={selectedMembership == "Vital Care"}
+            onChange={(e) => setSelectedMembership(e.target.value)}
+            className="mr-2"
+          />
+          Vital Care
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="member"
+            value="Wellness Plus"
+            checked={selectedMembership === "Wellness Plus"}
+            onChange={(e) => setSelectedMembership(e.target.value)}
+            className="mr-2"
+          />
+          Wellness Plus
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="member"
+            value="Health Starter"
+            checked={selectedMembership === "Health Starter"}
+            onChange={(e) => setSelectedMembership(e.target.value)}
+            className="mr-2"
+          />
+          Health Starter
+        </label>
+        </div>
       </div>
 
       {/* Buttons */}

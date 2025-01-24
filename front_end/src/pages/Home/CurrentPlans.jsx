@@ -1,53 +1,65 @@
 import React from 'react';
-import { Eye, MapPin } from 'lucide-react';
+import { Heart, Star, Shield } from 'lucide-react';
 
+function getGradient(id) {
+  const gradients = [
+    "from-yellow-400 to-orange-500",
+    "from-green-400 to-blue-400",
+    "from-pink-500 to-red-500"
+  ];
 
-const memberships = [
-  {
-    id: 1,
-    title: 'Health Status',
-    description: 'Comprehensive health monitoring and personalized recommendations',
-    benefits: [
-      'Regular health check-ups',
-      'Priority appointment booking',
-      'Digital health records',
-      'Personalized health insights',
-    ],
-  },
-];
+  if (id === 1) {
+    return gradients[0];
+  } else if (id === 2) {
+    return gradients[1];
+  } else if (id === 3) {
+    return gradients[2];
+  } else {
+    return "Invalid id"; // Handle invalid IDs gracefully
+  }
+}
 
-const CurrentPlans = () => {
+function getIcon(iconName) {
+  if ( iconName == 'Shield' )
+    return <Shield className="text-white w-8 h-8" />;
+
+  if ( iconName == 'Star' ) 
+    return <Star className="text-white w-8 h-8" />;
+
+  if ( iconName == 'Heart' )
+    return <Heart className="text-white w-8 h-8" />;
+}  
+
+const CurrentPlans = ({ currentPlan }) => {
   return (
     <div className="bg-white p-6 rounded-lg border border-[#A9DFBF] shadow-sm">
-      <h2 className="text-2xl font-semibold text-[#2C3E50] mb-8">Current Plans</h2>
-      {/* Flexbox container for the cards */}
-      <div className=" flex-wrap gap-8 justify-center">
-        {memberships.map((membership) => (
+      <h2 className="text-2xl font-semibold text-[#2C3E50] mb-8">
+        Current Plan
+      </h2>
+      <div className="flex flex-wrap gap-8 justify-left">
+        {currentPlan.map((plan) => (
           <div
-            key={membership.id}
-            className="bg-white p-4 rounded-lg border border-[#A9DFBF] transform transition-transform hover:scale-105 hover:shadow-xl hover:shadow-[0_0_15px_4px_rgba(255,215,0,0.8)] hover:border-[#1e7b43] w-[100%] sm:w-[48%] md:w-[30%] lg:w-[26%]"
+            key={plan.membership.id}
+            className={`p-4 rounded-lg border border-[#A9DFBF] transform transition-transform hover:scale-105 w-[30%] bg-gradient-to-br ${getGradient(plan.membership.id)}`}
           >
-            <h3 className="text-center text-xl font-medium text-[#2C3E50] mb-2">
-              {membership.title}
-            </h3>
-            <div className="space-y-2 mb-4">
-              <p className="text-[#2C3E50]">{membership.description}</p>
-              <div className="space-y-2">
-                <h4 className="font-medium text-[#2C3E50]">Benefits</h4>
-                <ul className="space-y-2">
-                  {membership.benefits.map((benefit, index) => (
-                    <li key={index} className="text-[#2C3E50] text-sm">
-                      • {benefit}
-                    </li>
-                  ))}
-                </ul>
+            {/* Flex container for the title and icon */}
+            <div className="flex items-center mb-2">
+              <h3 className="text-left text-xl font-semibold text-white mr-4">
+                {plan.membership.planName} {/* Title */}
+              </h3>
+              <div className="ml-auto">
+                {getIcon(plan.membership.planIcon)}  {/* Icon at the far right */}
               </div>
             </div>
-            <div className="flex space-x-3 justify-between">
-              <button className="w-full py-2 bg-[#2ECC71] text-white rounded-md hover:bg-[#27AE60] transition-colors">
-                Upgrade
-              </button>
-            </div>
+            <p className="text-white">{plan.membership.planDesc}</p>
+            <h4 className="font-medium text-white mt-4">Benefits:</h4>
+            <ul className="space-y-2 mt-2">
+              {plan.membershipBenefits.map((benefit, index) => (
+                <li key={index} className="text-white text-sm">
+                  • {benefit}
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
