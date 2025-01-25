@@ -184,7 +184,7 @@ function Home() {
                     </button>
 
                     {/* Google Maps */}
-                    <LoadScript googleMapsApiKey="AIzaSyDIuwcYsYV6tsL-6wlU7T_DnQrMlZEuZPU">
+                    <LoadScript googleMapsApiKey="">
                       <GoogleMap
                         mapContainerStyle={{
                           width: "100%",
