@@ -54,9 +54,13 @@ services:
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/enpriceamed?autoReconnect=true
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://avnadmin:AVNS_5Otrxry56DywJDiRI3V@mysql-12bb95fd-trinaykrishna1-46bc.d.aivencloud.com:16790/defaultdb?ssl-mode=REQUIRED
+            # - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/enpriceamed?autoReconnect=true
+      - SPRING_DATASOURCE_USERNAME=avnadmin
+      - SPRING_DATASOURCE_PASSWORD=AVNS_5Otrxry56DywJDiRI3V
+
+            # - SPRING_DATASOURCE_USERNAME=user
+      # - SPRING_DATASOURCE_PASSWORD=root
   
   db:
     image: mysql:8.0
