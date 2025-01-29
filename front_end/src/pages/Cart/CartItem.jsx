@@ -28,16 +28,19 @@ function CartItem({
     onQuantityChange(id, false);
     setIsQuantity( Math.max(Quantity - 1, 0));  
  };
+
+ const backend = import.meta.env.VITE_BACKEND;
+
   const onButtonClick=()=>{
     removeItem(id);
 
-    fetch(`http://localhost:8080/delCart?userId=${localStorage.getItem('userId')}&medId=${medicationID}&pharmId=${pharmID}`, { method: 'POST' })
+    fetch(`http://${backend}/delCart?userId=${localStorage.getItem('userId')}&medId=${medicationID}&pharmId=${pharmID}`, { method: 'POST' })
     .then(res => console.log(res.status));
 
   };
 
   useEffect( ( ) => {
-    fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+    fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
     .then( res => res.text() )
     .then( res => {
       const discount = JSON.parse(res).membership.planDiscount;

@@ -20,9 +20,11 @@ const Upload = () => {
     const uploadData = new FormData();
     uploadData.append("file", file);
 
+    const backend = import.meta.env.VITE_BACKEND;
+
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/api/upload", {
+      const response = await fetch(`http://${backend}/api/upload`, {
         method: "POST",
         body: uploadData,
       });
@@ -62,7 +64,9 @@ const Upload = () => {
       userId: localStorage.getItem('userId')
     };
 
-    fetch('http://localhost:8080/addPrescription', {
+    const backend = import.meta.env.VITE_BACKEND;
+
+    fetch(`http://${backend}/addPrescription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

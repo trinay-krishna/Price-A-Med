@@ -20,8 +20,6 @@ services:
 
       # Required for a single node cluster
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    networks:
-      - app-network
 
   kafka-ui:
     image: ghcr.io/kafbat/kafka-ui:latest
@@ -33,25 +31,22 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
     depends_on:
       - kafka
-    networks:
-      - app-network
 
   frontend:
-    build: ./front_end
-    hostname: frontend
+    # build: ./front_end
+    image: trinay1/pamfrontend:latest
     ports:
       - '5173:5173'
     environment:
       CHOKIDAR_USEPOLLING: "true"
+      VITE_BACKEND: localhost:8080
     volumes:
       - /app/node_modules
       - ./front_end:/app
-    networks:
-      - app-network
+    
 
   backend:
     build: ./back_end
-    hostname: backend
     ports:
       - 8080:8080
     volumes:
@@ -62,9 +57,6 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/enpriceamed?autoReconnect=true
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=root
-    networks:
-      - app-network
-    
   
   db:
     image: mysql:8.0
@@ -78,11 +70,6 @@ services:
       - MYSQL_PASSWORD=root
     ports:
       - 3306:3306
-    networks:
-      - app-network
   
 volumes:
   my-db-volume:
-
-networks:
-  app-network:

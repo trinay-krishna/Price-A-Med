@@ -44,9 +44,11 @@ const YourOrders = () => {
 
   const [orders, setOrders] = useState([]);
 
+  const backend = import.meta.env.VITE_BACKEND;
+
 
   useEffect( ( ) => {
-    fetch(`http://localhost:8080/getOrders?userId=${localStorage.getItem('userId')}`)
+    fetch(`http://${backend}/getOrders?userId=${localStorage.getItem('userId')}`)
     .then( res => res.text() )
     .then( res => {
       const response = JSON.parse(res);

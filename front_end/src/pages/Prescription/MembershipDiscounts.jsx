@@ -83,8 +83,10 @@ const MembershipDiscounts = ({ onUpgrade }) => {
 
   const [ memberships, setMemberships ] = useState([]);
 
+  const backend = import.meta.env.VITE_BACKEND;
+
     useEffect( ( ) => {
-      fetch(`http://localhost:8080/getMembershipPlans`)
+      fetch(`http://${backend}/getMembershipPlans`)
       .then(res => res.text())
       .then( res => {
         const membershipPlans = JSON.parse(res);

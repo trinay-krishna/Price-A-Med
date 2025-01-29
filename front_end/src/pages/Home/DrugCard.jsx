@@ -6,8 +6,10 @@ export default function DrugCard({ drug }) {
 
   const [ discount, setDiscount ] = useState(1);
 
+  const backend = import.meta.env.VITE_BACKEND;
+
   useEffect( ( ) => {
-    fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+    fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
     .then( res => res.text() )
     .then( res => {
       const discount = JSON.parse(res).membership.planDiscount;
@@ -30,7 +32,7 @@ export default function DrugCard({ drug }) {
     console.log(drug.med);
     const med = drug.med;
     if ( !isAddedToCart ) {
-      fetch('http://localhost:8080/addCart', {
+      fetch(`http://${backend}/addCart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +46,7 @@ export default function DrugCard({ drug }) {
         }),
       })
     } else {
-      fetch(`http://localhost:8080/delCart?userId=${localStorage.getItem('userId')}&medId=${med.medication.id}&pharmId=${med.pharmacy.id}`, { method: 'POST' })
+      fetch(`http://${backend}/delCart?userId=${localStorage.getItem('userId')}&medId=${med.medication.id}&pharmId=${med.pharmacy.id}`, { method: 'POST' })
       .then(res => res.text())
       .then(res => console.log(res));
     }

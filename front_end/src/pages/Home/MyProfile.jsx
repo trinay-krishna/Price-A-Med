@@ -164,13 +164,15 @@ function MyProfile() {
   const [oldPrescriptions, setOldPrescriptions] = useState(0);
   const [membershipPlanName, setMembershipPlanName] = useState('');
 
+  const backend = import.meta.env.VITE_BACKEND;
+
 useEffect(() => {
   // Fetch all membership plans
-  fetch('http://localhost:8080/getMembershipPlans')
+  fetch(`http://${backend}/getMembershipPlans`)
     .then((res) => res.json())
     .then((membershipPlans) => {
       // Fetch user membership
-      fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+      fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
         .then((res) => res.json())
         .then((membership) => {
 
@@ -196,7 +198,7 @@ useEffect(() => {
   });
 
   useEffect(() => {
-    fetch('http://localhost:8080/getPrescriptions', {
+    fetch(`http://${backend}/getPrescriptions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

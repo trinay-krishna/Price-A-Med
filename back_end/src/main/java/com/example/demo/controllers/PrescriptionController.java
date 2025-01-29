@@ -76,8 +76,6 @@ public class PrescriptionController {
         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         
     }
-
-    
     
     
     

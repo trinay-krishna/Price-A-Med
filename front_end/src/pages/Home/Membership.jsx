@@ -62,13 +62,15 @@ function Membership() {
   const [ memberships, setMemberships ] = useState([]);
   const [ userPlan, setUserPlan ] = useState(-1);
 
+  const backend = import.meta.env.VITE_BACKEND;
+
   useEffect( ( ) => {
-    fetch(`http://localhost:8080/getMembershipPlans`)
+    fetch(`http://${backend}/getMembershipPlans`)
     .then(res => res.text())
     .then( res => {
       const membershipPlans = JSON.parse(res);
       setMemberships(membershipPlans);
-      fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+      fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
       .then( res => res.text() )
       .then( res => {
           const membership = JSON.parse(res);
@@ -91,7 +93,7 @@ function Membership() {
   const handleUpgrade = (newPlan) => {
     setCurrentPlan([newPlan]); 
     console.log(newPlan);
-    fetch(`http://localhost:8080/upgradeUser?userId=${localStorage.getItem('userId')}&membershipId=${newPlan.membership.id}`, { method: 'POST' })
+    fetch(`http://${backend}/upgradeUser?userId=${localStorage.getItem('userId')}&membershipId=${newPlan.membership.id}`, { method: 'POST' })
     .then( res => {
       console.log(res.status);
     })

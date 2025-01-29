@@ -20,7 +20,9 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
       role: roleRef.current.value,
     };
 
-    fetch('http://localhost:8080/register', {
+    const backend = import.meta.env.VITE_BACKEND;
+
+    fetch(`http://${backend}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

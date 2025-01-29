@@ -33,14 +33,15 @@ function Home() {
   const [showMap, setShowMap] = useState(false);
 
   const backend = import.meta.env.VITE_BACKEND;
-  console.log(backend);
+  console.log("BACKEND", backend);
+
 
   useEffect(() => {
-    fetch(`${backend}/getCart?userIDString=${localStorage.getItem('userId')}`)
+    fetch(`http://${backend}/getCart?userIDString=${localStorage.getItem('userId')}`)
     .then(res => res.text())
     .then(res => JSON.parse(res))
     .then(cartItems => {
-      fetch('http://localhost:8080/getMedList')
+      fetch(`http://${backend}/getMedList`)
       .then(res => res.text())
       .then(res => {
         const meds = JSON.parse(res);
@@ -184,7 +185,7 @@ function Home() {
                     </button>
 
                     {/* Google Maps */}
-                    <LoadScript googleMapsApiKey="">
+                    <LoadScript googleMapsApiKey="AIzaSyDIuwcYsYV6tsL-6wlU7T_DnQrMlZEuZPU">
                       <GoogleMap
                         mapContainerStyle={{
                           width: "100%",

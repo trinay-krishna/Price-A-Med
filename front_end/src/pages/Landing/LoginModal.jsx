@@ -16,8 +16,9 @@ export default function LoginModal({ isOpen, onClose, onSignUpClick }) {
       password: passRef.current.value, 
     };
 
+    const backend = import.meta.env.VITE_BACKEND;
 
-    fetch('http://localhost:8080/login', {
+    fetch(`http://${backend}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

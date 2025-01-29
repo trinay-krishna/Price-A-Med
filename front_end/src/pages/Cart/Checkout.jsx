@@ -47,7 +47,7 @@
 
 //   const handlePlaceOrder = () => {
 //     setEmailSent(0);
-//     fetch(`http://localhost:8080/placeOrder?userId=${localStorage.getItem('userId')}&time=${selectedTime}`, {
+//     fetch(`http:///placeOrder?userId=${localStorage.getItem('userId')}&time=${selectedTime}`, {
 //       method: 'POST',
 //     }).then(res => {
 //       if ( res.status == 200 ) {
@@ -194,9 +194,11 @@ function Checkout() {
 
   const { total } = location.state || {};
 
+  const backend = import.meta.env.VITE_BACKEND;
+
   const handlePlaceOrder = () => {
     setEmailSent(0); // Show "Placing Order..."
-    fetch(`http://localhost:8080/placeOrder?userId=${localStorage.getItem('userId')}&time=${selectedTime}`, {
+    fetch(`http://${backend}/placeOrder?userId=${localStorage.getItem('userId')}&time=${selectedTime}`, {
       method: 'POST',
     }).then(res => {
       if (res.status === 200) {

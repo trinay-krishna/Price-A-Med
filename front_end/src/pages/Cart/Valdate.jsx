@@ -22,9 +22,11 @@ function Validate() {
   const navigate = useNavigate();
 
     const [ discount, setDiscount ] = useState(20);
+
+    const backend = import.meta.env.VITE_BACKEND;
   
     useEffect( ( ) => {
-      fetch(`http://localhost:8080/getUserMembership?userId=${localStorage.getItem('userId')}`)
+      fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
       .then( res => res.text() )
       .then( res => {
         const discount = JSON.parse(res).membership.planDiscount;
@@ -51,8 +53,10 @@ function Validate() {
       console.log(items);
 
       const idList = items.map( ele => ele.medicationID );
+
+      const backend = import.meta.env.VITE_BACKEND;
       
-      fetch('http://localhost:8080/validateMeds', {
+      fetch(`http://${backend}/validateMeds`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

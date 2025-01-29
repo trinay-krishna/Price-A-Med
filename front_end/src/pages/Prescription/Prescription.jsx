@@ -11,8 +11,10 @@ function Prescription() {
   const [ runningPrescriptions, setRunningPrescriptions ] = useState([]);
   const [ oldPrescriptions, setOldPrescriptions ] = useState([]);
 
+  const backend = import.meta.env.VITE_BACKEND;
+
   useEffect( ( ) => {
-    fetch('http://localhost:8080/getPrescriptions', {
+    fetch(`http://${backend}/getPrescriptions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -51,7 +53,9 @@ function Prescription() {
       return prescription.id != id;
     } ));
 
-    fetch('http://localhost:8080/endPrescription', {
+    const backend = import.meta.env.VITE_BACKEND;
+
+    fetch(`http://${backend}/endPrescription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
