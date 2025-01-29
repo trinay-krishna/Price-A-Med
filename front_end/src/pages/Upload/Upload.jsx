@@ -24,7 +24,7 @@ const Upload = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`http://${backend}/api/upload`, {
+      const response = await fetch(`${backend}/api/upload`, {
         method: "POST",
         body: uploadData,
       });
@@ -66,7 +66,7 @@ const Upload = () => {
 
     const backend = import.meta.env.VITE_BACKEND;
 
-    fetch(`http://${backend}/addPrescription`, {
+    fetch(`${backend}/addPrescription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

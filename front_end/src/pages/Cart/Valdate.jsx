@@ -26,7 +26,7 @@ function Validate() {
     const backend = import.meta.env.VITE_BACKEND;
   
     useEffect( ( ) => {
-      fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
+      fetch(`${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
       .then( res => res.text() )
       .then( res => {
         const discount = JSON.parse(res).membership.planDiscount;
@@ -56,7 +56,7 @@ function Validate() {
 
       const backend = import.meta.env.VITE_BACKEND;
       
-      fetch(`http://${backend}/validateMeds`, {
+      fetch(`${backend}/validateMeds`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

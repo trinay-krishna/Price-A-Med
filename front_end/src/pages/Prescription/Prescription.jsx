@@ -14,7 +14,7 @@ function Prescription() {
   const backend = import.meta.env.VITE_BACKEND;
 
   useEffect( ( ) => {
-    fetch(`http://${backend}/getPrescriptions`, {
+    fetch(`${backend}/getPrescriptions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ function Prescription() {
 
     const backend = import.meta.env.VITE_BACKEND;
 
-    fetch(`http://${backend}/endPrescription`, {
+    fetch(`${backend}/endPrescription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

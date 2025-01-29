@@ -65,12 +65,12 @@ function Membership() {
   const backend = import.meta.env.VITE_BACKEND;
 
   useEffect( ( ) => {
-    fetch(`http://${backend}/getMembershipPlans`)
+    fetch(`${backend}/getMembershipPlans`)
     .then(res => res.text())
     .then( res => {
       const membershipPlans = JSON.parse(res);
       setMemberships(membershipPlans);
-      fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
+      fetch(`${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
       .then( res => res.text() )
       .then( res => {
           const membership = JSON.parse(res);

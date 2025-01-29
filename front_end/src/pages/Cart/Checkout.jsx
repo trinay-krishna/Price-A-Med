@@ -198,7 +198,7 @@ function Checkout() {
 
   const handlePlaceOrder = () => {
     setEmailSent(0); // Show "Placing Order..."
-    fetch(`http://${backend}/placeOrder?userId=${localStorage.getItem('userId')}&time=${selectedTime}`, {
+    fetch(`${backend}/placeOrder?userId=${localStorage.getItem('userId')}&time=${selectedTime}`, {
       method: 'POST',
     }).then(res => {
       if (res.status === 200) {

@@ -37,11 +37,11 @@ function Home() {
 
 
   useEffect(() => {
-    fetch(`http://${backend}/getCart?userIDString=${localStorage.getItem('userId')}`)
+    fetch(`${backend}/getCart?userIDString=${localStorage.getItem('userId')}`)
     .then(res => res.text())
     .then(res => JSON.parse(res))
     .then(cartItems => {
-      fetch(`http://${backend}/getMedList`)
+      fetch(`${backend}/getMedList`)
       .then(res => res.text())
       .then(res => {
         const meds = JSON.parse(res);

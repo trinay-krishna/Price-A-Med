@@ -48,7 +48,7 @@ const YourOrders = () => {
 
 
   useEffect( ( ) => {
-    fetch(`http://${backend}/getOrders?userId=${localStorage.getItem('userId')}`)
+    fetch(`${backend}/getOrders?userId=${localStorage.getItem('userId')}`)
     .then( res => res.text() )
     .then( res => {
       const response = JSON.parse(res);

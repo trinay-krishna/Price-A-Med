@@ -22,7 +22,7 @@ function SignUpModal({ isOpen, onClose, onLoginClick }) {
 
     const backend = import.meta.env.VITE_BACKEND;
 
-    fetch(`http://${backend}/register`, {
+    fetch(`${backend}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

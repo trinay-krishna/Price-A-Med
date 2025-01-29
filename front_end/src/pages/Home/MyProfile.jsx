@@ -168,11 +168,11 @@ function MyProfile() {
 
 useEffect(() => {
   // Fetch all membership plans
-  fetch(`http://${backend}/getMembershipPlans`)
+  fetch(`${backend}/getMembershipPlans`)
     .then((res) => res.json())
     .then((membershipPlans) => {
       // Fetch user membership
-      fetch(`http://${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
+      fetch(`${backend}/getUserMembership?userId=${localStorage.getItem('userId')}`)
         .then((res) => res.json())
         .then((membership) => {
 
@@ -198,7 +198,7 @@ useEffect(() => {
   });
 
   useEffect(() => {
-    fetch(`http://${backend}/getPrescriptions`, {
+    fetch(`${backend}/getPrescriptions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
